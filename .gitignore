@@ -206,3 +206,6 @@ marimo/_static/
 marimo/_lsp/
 __marimo__/
 
+# my added git ignores
+# python virtual environment
+pyenv
