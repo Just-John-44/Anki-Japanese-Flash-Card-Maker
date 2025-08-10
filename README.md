@@ -8,3 +8,7 @@ if you dont want the change to persist after you restart your terminal, do this:
 Linux/macOS (bash/zsh): `export OPENAI_API_KEY="your api key"` 
 Windows (cmd) `set OPENAI_API_KEY="your api key"`
 
+if you store your input vocab files in a directory other than your user documents, you
+need to add that directory by hand to the .car_maker_config file.
+.card_maker_config:
+`SEARCH_DIRS="home/username/Documents';your vocab file directory here'"`
