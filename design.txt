@@ -13,17 +13,13 @@ CardFileManager
  - input search directory: string
  - output directory: string
  - readWords(): list of tuples
+ - _initSearchDirs(): 
  - createCSV()
 
 
 program flow:
  - read input text file kanji and kiragana/katakana into list of tuples (kanji, hiragana/katakana)
-    - initialize card file manager with default vocab search directories
-    - prompt user for other search directories
-       - if another one is entered, save it to a file of search directories to be loaded up
-         the next time the program is run
-    - search the directories for the file name entered by the user
-       - check filename and type validity and existance
+    - initialize card file manager with search directories in config file
  - create a tuple of initialized card objects from words in that list
  - scrape jisho for definition of words in list and add them as sentences to the tuple of cards
    one by one
