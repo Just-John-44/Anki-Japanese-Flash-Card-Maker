@@ -44,29 +44,6 @@ def scrapeWordBlock(page, word):
 	return
 
 
-def scrapeKana(word_block):
-
-	if not word_block:
-		return
-
-	writing = word_block.find("span", class_="text")
-	furi = word_block.find("span", class_="furigana") # furi short for furigana
-
-	if not writing or not furi:
-		print(f"issue with bulding kana")
-		return
-
-	writing_chars = [ch.text.strip() for ch in writing]
-	furi_chars = [ch.text.strip() for ch in furi]
-	furi_chars = furi_chars[1:-1]
-
-	kana = ""
-	for i in range(len(furi_chars)):
-		kana += writing_chars[i] if not furi_chars[i] else furi_chars[i]
-
-	return kana
-
-
 def scrapeDefinition(word_block):
 
 	if not word_block:
@@ -74,27 +51,73 @@ def scrapeDefinition(word_block):
 
 	def_num_css_class = "meaning-definition-section_divider"
 	nums = word_block.find_all('span', class_=def_num_css_class)
-	metadata = word_block.find_all('div', class_='meaning-tags')
+	parts_of_speech = word_block.find_all('div', class_='meaning-tags')
 	defs = word_block.find_all('span', class_='meaning-meaning')
-
+	
 	if not nums:
 		print("issue finding definition information")
 		return
 
 	def_str = ""
 	max_defs = 3
-	unwanted_info = ["Wikipedia definition", "Notes", "Other forms"]
+	keywords = {"Godan":"[go.]", 
+				"Ichidan":"[ichi.]", 
+				"Noun":"[n.]", 
+				"Suru verb":"[suru v.]", 
+				"Na-adjective":"[na-adj.]", 
+				"I-adjective":"[i-adj.]", 
+				"Transitive":"[tra.]", 
+				"Intransitive":"[intra.]", 
+				"Adverb":"[adv.]", 
+				"Place":"[Place]"}
+	
 	for i in range(len(nums)):
-		if metadata[i].text in unwanted_info:
-			continue 
 
 		if i == max_defs:
 			def_str += "...\n"
 			break
 
-		def_str += metadata[i].text + '\n' + nums[i].text + defs[i].text + '\n'
+		def_line_pos = parts_of_speech[i].text.split(", ") # pos short for part of speech
+		wanted_pos = []
+		for j in range(len(def_line_pos)):
+			for keyword in keywords:
+				if keyword in def_line_pos[j]:
+					wanted_pos.append(keywords[keyword])
+
+		if not wanted_pos:
+			continue # don't want def lines for any other type of info
+
+		for pos in wanted_pos:
+			def_str += pos
+
+		def_str += '\n' + nums[i].text + defs[i].text + '\n'
 
 	return def_str
+
+
+# I got carried away recreating functionality from my original attempt of this
+# program and created this function that isn't needed anywhere.
+# def scrapeKana(word_block):
+
+# 	if not word_block:
+# 		return
+
+# 	writing = word_block.find("span", class_="text")
+# 	furi = word_block.find("span", class_="furigana") # furi short for furigana
+
+# 	if not writing or not furi:
+# 		print(f"issue with bulding kana")
+# 		return
+
+# 	writing_chars = [ch.text.strip() for ch in writing]
+# 	furi_chars = [ch.text.strip() for ch in furi]
+# 	furi_chars = furi_chars[1:-1]
+
+# 	kana = ""
+# 	for i in range(len(furi_chars)):
+# 		kana += writing_chars[i] if not furi_chars[i] else furi_chars[i]
+
+# 	return kana
 
 
 
@@ -105,6 +128,8 @@ if __name__ == "__main__":
 	word = ("昼ご飯", "ひるごはん")
 	word = ("", "さきおととい")
 	word = ("一昨昨日", "")
+	word = ("極端", "きょくたん")
+	word = ("開く", "あく")
 	
 	writing_page, kana_page = wordHtmlPages(word)
 	if writing_page or kana_page:
@@ -122,8 +147,8 @@ if __name__ == "__main__":
 		else:	
 			print(f"no word block found")
 
-	kana = scrapeKana(word_block)
-	print(f"kana: {kana}")
+	# kana = scrapeKana(word_block)
+	# print(f"kana: {kana}")
 
 	definition = scrapeDefinition(word_block)
 	print(f"definition: {definition}")

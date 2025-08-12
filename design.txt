@@ -23,6 +23,9 @@ program flow:
  - create a tuple of initialized card objects from words in that list
  - scrape jisho for definition of words in list and add them as sentences to the tuple of cards
    one by one
+    - grab page that results from searching for the word
+    - grab html block from page that has word information
+    - parse and format information for definition
  - prompt chat gpt for sentence examples from list of words and add them the cards in the cards
    tuple
  - generate tts audio files for each of the words in the words list and add them to the cards in 
