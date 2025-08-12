@@ -82,11 +82,17 @@ def scrapeDefinition(word_block):
 		return
 
 	def_str = ""
+	max_defs = 3
+	unwanted_info = ["Wikipedia definition", "Notes", "Other forms"]
 	for i in range(len(nums)):
-		if len(metadata) > i:
-			def_str += metadata[i].text + '\n' 
+		if metadata[i].text in unwanted_info:
+			continue 
 
-		def_str += nums[i].text + defs[i].text
+		if i == max_defs:
+			def_str += "...\n"
+			break
+
+		def_str += metadata[i].text + '\n' + nums[i].text + defs[i].text + '\n'
 
 	return def_str
 

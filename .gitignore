@@ -210,3 +210,4 @@ __marimo__/
 # python virtual environment
 pyenv
 oldVersion
+.card_maker_config
