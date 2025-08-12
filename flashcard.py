@@ -4,7 +4,7 @@
 
 class FlashCard:
     def __init__(self, word):
-        self.kanji = word[0]
+        self.writing = word[0]
         self.kana = word[1]
         self.definition = ""
         self.sentences = ""
@@ -12,8 +12,8 @@ class FlashCard:
         
 
     def __repr__(self):
-        if self.kanji:
-            word = f"{self.kanji}\u3000{self.kana}"
+        if self.writing:
+            word = f"{self.writing}\u3000{self.kana}"
         else:
             word = f"{self.kana}"
 
@@ -36,7 +36,7 @@ class FlashCard:
 
 
     def csv_string(self):
-        word = f"{self.kanji}\u3000{self.kana}" if self.kanji else self.kana
+        word = f"{self.writing}\u3000{self.kana}" if self.writing else self.kana
 
         return (f"{word},{self.definition},"
             f"{self.sentences},{self.audio_filepath}\n")
@@ -44,7 +44,7 @@ class FlashCard:
 
     def missingFields(self):
         # card can have no kanji if it has kana
-        if (self.kanji == "" and self.kana == "" or 
+        if (self.writing == "" and self.kana == "" or 
             self.kana == "" or
             self.definition == "" or
             self.sentences == "" or

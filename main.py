@@ -4,6 +4,7 @@ import sys
 
 
 def main():
+    print("jello")
 
     argv = sys.argv
     if len(argv) != 2:
@@ -15,6 +16,8 @@ def main():
     fm.initConfigFile()
     card_file_manager = fm.CardFileManager()
     vocab = tuple(card_file_manager.readWords(filename)) # vocab is a tuple of tuples
+
+    # scrape jisho for word information
 
 
 main()
