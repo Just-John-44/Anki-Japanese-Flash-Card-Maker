@@ -48,10 +48,7 @@ def promptChatGPT(client, model, vocab):
         model = model
     )
 
-    print(full_prompt)
-
     sentences = chat_completion.choices[0].message.content.split('\n')
-    print(sentences)
 
     # this makes a list of strings of 2 exampel sentences
     new_sentences = []

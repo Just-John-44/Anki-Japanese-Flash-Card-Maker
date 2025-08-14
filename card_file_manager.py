@@ -5,17 +5,19 @@
 import os
 
 CONFIG_FILE = ".card_maker_config"
+AUDIO_DIR = "ttsAudio/"
 
 
 class CardFileManager:
 
     search_dirs = []
+    audio_dir = ""
 
     def __init__(self):
-        self._initSearchDirs()
+        self._initDirectories()
 
 
-    def _initSearchDirs(self):
+    def _initDirectories(self):
         try:
             infile = open(CONFIG_FILE, "r")
         except Exception as e:
@@ -25,18 +27,20 @@ class CardFileManager:
         file_lines = infile.readlines()
         for line in file_lines:
             if "SEARCH_DIRS" in line:
-                search_dirs = line.replace("SEARCH_DIRS=", "").split(';')
-                search_dirs = [dir.strip() for dir in search_dirs]
+                self.search_dirs = line.replace("SEARCH_DIRS=", "").split(';')
+                self.search_dirs = [dir.strip() for dir in self.search_dirs]
+            if "AUDIO_DIR" in line:
+                self.audio_dir = line.replace("AUDIO_DIR=", "")
 
-        if not search_dirs:
-            print("no specified search directories")
+        if not self.search_dirs:
             exit(1)
-        
-        for dir in search_dirs:
-            self.search_dirs.append(dir)
+
+        if not self.audio_dir:
+            print("no specified audio directory")
+            exit(1)
 
 
-    def readWords(self, filename):
+    def readWords(self, filename: str):
         if len(filename.split('.')) == 1 or filename.split('.')[1] != "txt":
             print("file must be a .txt file")
             exit(1)
@@ -91,18 +95,22 @@ class CardFileManager:
         infile.close()
 
 
-def initConfigFile():
+def initFileSystem():
     try:
+        if not os.path.isdir(AUDIO_DIR):
+            os.mkdir(AUDIO_DIR)
+
         # at the moment this block code assumes that if there is a 
         # .card_maker_config file, then there is a valid search directory
         # inside
         if not os.path.isfile(CONFIG_FILE):
             infile = open(CONFIG_FILE, "w")
             infile.write(f"SEARCH_DIRS={os.path.expanduser('~/Documents/')}")
+            infile.write(f"AUDIO_DIR=./{AUDIO_DIR}")
             infile.close()
 
     except Exception as e:
-        print(f"error initializing config file: {e}")
+        print(f"error initializing file system: {e}")
         exit(1)
 
 

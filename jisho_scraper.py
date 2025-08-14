@@ -47,7 +47,7 @@ def scrapeWordBlock(page, word):
 def scrapeDefinition(word_block):
 
 	if not word_block:
-		return
+		return ""
 
 	def_num_css_class = "meaning-definition-section_divider"
 	nums = word_block.find_all('span', class_=def_num_css_class)

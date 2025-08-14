@@ -209,5 +209,14 @@ __marimo__/
 # my added git ignores
 # python virtual environment
 pyenv
+
+# original attempt of this program for reference
 oldVersion
+
+# user specifc data for the program
 .card_maker_config
+
+# tts module resources
+MeloTTS
+
+ttsAudio

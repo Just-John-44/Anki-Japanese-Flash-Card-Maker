@@ -8,8 +8,9 @@ class FlashCard:
         self.kana = word[1]
         self.definition = ""
         self.sentences = ""
-        self.audio_filepath = ""
-        
+        self.word_audio_filepath = ""
+        self.sentence_audio_filepath = ""
+
 
     def __repr__(self):
         if self.writing:
@@ -21,25 +22,17 @@ class FlashCard:
             f"{word}\n"
             f"{self.definition}\n"
             f"{self.sentences}\n"
-            f"{self.audio_filepath}\n"
+            f"{self.word_audio_filepath}\n"
+            f"{self.sentence_audio_filepath}\n"
             "--------------------\n")
-    
-
-    # I thought I could use this in the missingFields function but it's not helpful
-    # because the function requires a more in depth check
-    # def __iter__(self):
-    #     yield self.kanji
-    #     yield self.kana
-    #     yield self.definition
-    #     yield self.sentences
-    #     yield self.audio_filepath
 
 
     def csv_string(self):
         word = f"{self.writing}\u3000{self.kana}" if self.writing else self.kana
 
         return (f"{word},{self.definition},"
-            f"{self.sentences},{self.audio_filepath}\n")
+            f"{self.sentences},{self.word_audio_filepath},"
+            f"{self.sentence_audio_filepath}\n")
 
 
     def missingFields(self):
@@ -48,7 +41,8 @@ class FlashCard:
             self.kana == "" or
             self.definition == "" or
             self.sentences == "" or
-            self.audio_filepath == ""):
+            self.word_audio_filepath == "" or
+            self.sentence_audio_filepath == ""):
             return True
 
         return False
