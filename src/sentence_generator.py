@@ -2,7 +2,7 @@
 # Created: 8/12/2025
 # sentence_generator.py
 
-import card_file_manager as cfm
+# import card_file_manager as cfm
 import re
 from openai import OpenAI
 import os

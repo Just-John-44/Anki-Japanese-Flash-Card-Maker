@@ -31,7 +31,7 @@ class FlashCard:
         word = f"{self.writing}\u3000{self.kana}" if self.writing else self.kana
 
         return (f"{word},{self.definition},"
-            f"{self.sentences},{self.word_audio_filepath},"
+            f"{self.sentences},[sound:{self.word_audio_filepath}],"
             f"{self.sentence_audio_filepath}\n")
 
 
@@ -46,7 +46,7 @@ class FlashCard:
             return True
 
         return False
-        
+
 
     def addPitch(self):
         pass

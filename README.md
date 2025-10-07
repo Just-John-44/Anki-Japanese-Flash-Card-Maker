@@ -13,7 +13,7 @@ sudo apt install ffmpeg
 ```  
   
 All of the modules that are not natively included with python are stored in the 
-requirements.txt file. Do download them do the following:
+requirements.txt file. To download them do the following:
 ```bash
 pip install -r requirements.txt
 ```  
@@ -24,10 +24,10 @@ Add your openai api key to your system environment. In your shell config, add th
 OPENAI_API_KEY="insert your api key here"
 ```  
   
-If you dont want the change to persist after you restart your terminal, do this:
+If you dont want the change to persist after you restart your terminal, do this:  
 Linux/macOS (bash/zsh): `export OPENAI_API_KEY="your api key"`  
 Windows (cmd): `set OPENAI_API_KEY="your api key"`  
   
 If you store your input vocab files in a directory other than your user documents, you
-need to add that directory by hand to the .car_maker_config file:  
+need to add that directory by hand to the .car_maker_config file:
 `SEARCH_DIRS="home/username/Documents';your vocab file directory here'"`

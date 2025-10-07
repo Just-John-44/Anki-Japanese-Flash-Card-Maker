@@ -215,8 +215,10 @@ oldVersion
 
 # user specifc data for the program
 .card_maker_config
+ttsAudio/
 
-# tts module resources
-MeloTTS
+# misc
+design.txt
+commit_notes.txt
 
-ttsAudio
+
