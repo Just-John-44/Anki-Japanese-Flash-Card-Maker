@@ -49,10 +49,10 @@ def main():
 
     # print(flashcards)
 
-    # create csv file
-    with open(f"tango_{date.today().strftime('%Y-%m-%d')}.csv", "w") as outfile:
+    # create tsv file
+    with open(f"tango_{date.today().strftime('%Y-%m-%d')}.tsv", "w") as outfile:
         for card in flashcards:
-            print(card.csv_string(), file=outfile)
+            print(card.tsv_string(), file=outfile)
 
 
 

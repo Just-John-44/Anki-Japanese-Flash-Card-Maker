@@ -27,14 +27,15 @@ class FlashCard:
             "--------------------\n")
 
 
-    def csv_string(self):
+    def tsv_string(self):
         word = f"{self.writing}\u3000{self.kana}" if self.writing else self.kana
 
-        csv_string = (f"{word},{self.definition},"
-            f"{self.sentences},[sound:{self.word_audio_filepath}],"
-            f"{self.sentence_audio_filepath}\n")
+        tsv_string = (f"{word}\t{self.definition}\t"
+            f"{self.sentences}\t[sound:{self.word_audio_filepath}]\t"
+            f"[sound:{self.sentence_audio_filepath}]")
 
-        return csv_string.replace('\n', "<br>")
+        return tsv_string.replace('\n', "<br>")
+
 
     def missingFields(self):
         # card can have no kanji if it has kana
