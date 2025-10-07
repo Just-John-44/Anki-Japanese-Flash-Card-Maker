@@ -50,7 +50,7 @@ def main():
     # print(flashcards)
 
     # create csv file
-    with open(f"単語_{date.today().strftime('%Y-%m-%d')}.csv", "w") as outfile:
+    with open(f"tango_{date.today().strftime('%Y-%m-%d')}.csv", "w") as outfile:
         for card in flashcards:
             print(card.csv_string(), file=outfile)
 
