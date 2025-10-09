@@ -1,13 +1,16 @@
+#!/usr/bin/env python3
+
 import flashcard
 import jisho_scraper as jscrape
 import sentence_generator as sgenerator
 from datetime import date
 
 import sys
+import os
 # tts related includes 
 from gtts import gTTS
 
-AUDIO_DIR = "../ttsAudio/"
+AUDIO_DIR = f"./ttsAudio_{date.today().strftime('%Y-%m-%d')}/"
 
 
 def main():
@@ -19,7 +22,7 @@ def main():
     else:
         filename = argv[1]
 
-    print("jello") # I like jello.
+    print("\njello\n") # I like jello.
 
     vocab = tuple(readWords(filename)) # vocab is a tuple of tuples (kanji, word), (..., ...)
     flashcards = [flashcard.FlashCard(word) for word in vocab]
@@ -54,13 +57,22 @@ def main():
         for card in flashcards:
             print(card.tsv_string(), file=outfile)
 
+    print("\ntsv file created. Don't forget to add any missing values for\n"
+          "definitions that were listed as issues. Zip the tsv file with\n"
+          "the mp3 files before importing to Anki.\n")
+
 
 
 def generateTTSMp3(vocab, sentences):
+    reset_line = "\u001b[2K\r"
+
+    os.mkdir(AUDIO_DIR)
 
     word_filenames = []
     sentence_filenames = []
     for word, sentence in zip(vocab, sentences):
+        print(f"{reset_line}Generating tts for {word[0] if word[0] else word[1]}", end="")
+
         nonempty_word = word[0] if word[0] else word[1]
 
         word_out_filename = f"{AUDIO_DIR}{nonempty_word}.mp3"
@@ -75,6 +87,8 @@ def generateTTSMp3(vocab, sentences):
 
         word_filenames.append(word_out_filename)
         sentence_filenames.append(sentence_out_filename)
+
+    print() # newline for when the "generating tts" prints are complete
 
     return word_filenames, sentence_filenames
 
