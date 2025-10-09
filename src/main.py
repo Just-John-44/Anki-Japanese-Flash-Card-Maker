@@ -66,7 +66,12 @@ def main():
 def generateTTSMp3(vocab, sentences):
     reset_line = "\u001b[2K\r"
 
-    os.mkdir(AUDIO_DIR)
+    try:
+        os.mkdir(AUDIO_DIR)
+    except Exception as e:
+        print(f"Error {e}. tsv file not created.")
+        exit(1)
+
 
     word_filenames = []
     sentence_filenames = []
