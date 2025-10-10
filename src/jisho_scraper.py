@@ -55,7 +55,6 @@ def scrapeDefinition(word_block):
     defs = word_block.find_all('span', class_='meaning-meaning')
 
     if not nums or len(parts_of_speech) < len(nums): # all defs are numbered, so return in the case where there are none
-        print("issue finding definition information")
         return ""
 
     desired_pos = {
@@ -97,14 +96,17 @@ def scrapeDefinition(word_block):
     if def_str:
         return def_str
     else:
-        print("issue finding definition information")
         return ""
 
 
 def gatherDefinitions(vocab):
 
+    reset_line = "\u001b[2K\r"
+
     definitions = []
     for word in vocab:
+        print(f"{reset_line}Searching for definition of {word[0] if word[0] else word[1]}", end="")
+
         writing_page, kana_page = wordHtmlPages(word)
         if not writing_page and not kana_page:
             print(f"no pages found for {word[0]} or {word[1]}")
@@ -116,7 +118,12 @@ def gatherDefinitions(vocab):
             if not word_block:
                 print(f"no word block found for {word[0]} or {word[1]}")
 
-        definitions.append(scrapeDefinition(word_block))
+        definition = scrapeDefinition(word_block)
+        if not definition:
+            print(f"{reset_line}Issue finding definition for {word[0] if word[0] else word[1]}")
+        definitions.append(definition)
+
+    print() # newline after all of the "searching for lines are complete"
 
     return definitions
 

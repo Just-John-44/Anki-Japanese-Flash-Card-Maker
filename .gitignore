@@ -215,7 +215,7 @@ oldVersion
 
 # user specifc data for the program
 .card_maker_config
-ttsAudio/
+ttsAudio*
 
 # misc
 design.txt
