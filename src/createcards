@@ -56,8 +56,7 @@ def main():
             print(card.tsv_string(), file=outfile)
 
     print("\ntsv file created. Don't forget to add any missing values for\n"
-          "definitions that were listed as issues. Zip the tsv file with\n"
-          "the mp3 files before importing to Anki.\n")
+          "definitions that were listed as issues.\n")
 
 
 
