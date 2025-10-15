@@ -22,21 +22,38 @@ This project was created to help me create Anki flashcards faster than I could b
 
 ## **Requirements and Build**
 ---
-<!--**Docker:**-->
-<!--put docker comamnds here after the docker image is created-->
 
-
-**macOS/Linux:**
+### **macOS/Linux:**
 All dependencies are listed in requirements.txt. Do the following to get them downloaded:
 
 ```bash
 pip install -r requirements.txt
 ```
 
-## **The Set Up**
 Add your openai api key to your system environment. In your shell config, add this line:
 
-Linux/macOS: `export OPENAI_API_KEY="insert your api key here"`
+```bash
+export OPENAI_API_KEY="insert your api key here"
+```
+
+### **Docker:**
+To create and run a docker container, do the following to build the the image:
+
+```bash
+docker build -t your-image-name build/directory/here
+```
+
+Next, create and run the container with the following command:
+
+```bash
+docker run --rm -it \
+-e OPENAI_API_KEY="your api key in quotes" \
+-v /directory/to/run/the/container:/app your-image-name /app/your_vocab_input_file.txt
+```
+
+- `--rm` deletes the container after its done running
+- `-e` specifies the environment vaariables needed for the program
+- `-v` mounts your filepath to the filepath in the container
 
 
 ## **How to Use**
@@ -65,6 +82,4 @@ createcards mv_vocab_list.txt
 The program will run, displaying what step it is on during the card making process, and will notify you if there are any issues finding definitions. The web scraper is not perfect, and you will have to enter the definitions manually for the ones that it can not find.
 
 Your current directory will have a new tsv file and mp3 files for all of the words on your list. The only thing left to do now is to import them. All of your mp3 files need to be moved to Anki's collection.media folder before you import your tsv file. Find it, and copy or move your mp3 files into it. Lastly, import your tsv file into the Anki app and your done!
-
-## **How to Contribute**
 
