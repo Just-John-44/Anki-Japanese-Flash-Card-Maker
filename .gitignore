@@ -223,3 +223,4 @@ commit_notes.txt
 *.mp3
 *.tsv
 program_prompt.txt
+card_file_manager.py

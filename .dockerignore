@@ -1,0 +1,8 @@
+.git*
+__pycache__
+ttsAudio*
+tango*
+program_prompt.txt
+oldVersion
+attachments
+card_file_manager.py
