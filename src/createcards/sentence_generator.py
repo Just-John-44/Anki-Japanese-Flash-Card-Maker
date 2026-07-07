@@ -1,9 +1,9 @@
 # sentence_generator.py
 # Created: 8/12/2025
-# Last Edited: 6/25/2026
+# Last Edited: 7/6/2026
 # Author: John Wesley Thompson
 
-from createcards.flash_card import Word
+from createcards.ccnote import Word
 
 import json
 from openai import OpenAI
@@ -53,7 +53,10 @@ Return one object entry for every word provided.
     ...
 }
 
+
 '''
+
+IDEOGRAPHIC_SPACE = '\u3000'
 
 load_dotenv()
 
@@ -77,10 +80,11 @@ class OpenAISentenceGenerator:
         self.client = OpenAI(api_key=api_key)
 
     def generate_sentences(self, vocab: list[Word]) -> list[str]:
-        vocab_strings = ['\u3000'.join(word) if word[0] else word[1] for word in vocab]
+        '''Generates sentences using the OpenAI API'''
+        vocab_strings = [IDEOGRAPHIC_SPACE.join(word) if word[0] else word[1] for word in vocab]
         vocab_text = '\n'.join(vocab_strings)
 
-        full_prompt = PROMPT_HEADER + "\n\n" + vocab_text
+        full_prompt = PROMPT_HEADER + vocab_text
         chat_completion = self.client.chat.completions.create(
             model = self.model,
             messages = [
@@ -103,7 +107,7 @@ class OpenAISentenceGenerator:
 
         sentences = []
         for word in vocab_strings:
-            entry = data[word]
-            sentences.append(entry["s1"] + ' ' + entry["s2"])
+            entry = data[word],
+            sentences.append(entry["s1"] + "<br>" + entry["s2"])
 
         return sentences
