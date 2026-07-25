@@ -107,7 +107,7 @@ class OpenAISentenceGenerator:
 
         sentences = []
         for word in vocab_strings:
-            entry = data[word],
+            entry = data[word]
             sentences.append(entry["s1"] + "<br>" + entry["s2"])
 
         return sentences

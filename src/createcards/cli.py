@@ -1,11 +1,11 @@
 # cli.py
-# Last Edited: 7/6/2026
+# Last Edited: 7/24/2026
 # Author: John Wesley Thompson
 
 from createcards.ccnote import Word
 from createcards.sentence_generator import OpenAISentenceGenerator
 from createcards.services.setup_service import SetupService
-from createcards.services.ccnote_service import CCNoteService, CCNoteField
+from createcards.services.ccnote_service import CCNoteService
 
 import sqlite3
 from pathlib import Path
@@ -57,6 +57,7 @@ def main():
     sentence_generator = OpenAISentenceGenerator()
     fc_service = CCNoteService(db_conn, sentence_generator)
 
+
     notes = fc_service.create_flash_cards(vocab)
 
     db_conn.close()
@@ -72,10 +73,8 @@ def main():
     package = genanki.Package(deck)
 
     for note in notes:
-        package.media_files.append(
-            note.fields[CCNoteField.READINGS_AUDIO_TAG],
-            note.fields[CCNoteField.SENTENCES_AUDIO_TAG]
-        )
+        package.media_files.append(note.readings_audio_file)
+        package.media_files.append(note.sentences_audio_file)
 
     # write to file and show completion
     package.write_to_file(args.output_file)

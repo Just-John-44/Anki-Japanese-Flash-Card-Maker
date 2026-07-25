@@ -1,0 +1,54 @@
+name: Generate PlantUML Diagrams
+
+on:
+  push:
+    paths:
+      - "docs/*.puml"
+
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - name: Install Graphviz
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y graphviz
+
+      - name: Install PlantUML
+        run: |
+          wget https://github.com/plantuml/plantuml/releases/latest/download/plantuml.jar
+
+      - name: Generate SVGs
+        run: |
+          find docs/ -name "*.puml" -exec java -jar plantuml.jar -tsvg {} \;
+
+      - name: Commit Updated Diagrams
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add docs
+
+          if git diff --cached --quiet; then
+            echo "No changes."
+          else
+            git commit -m "Auto-generate PlantUML diagrams"
+            git push
+          fi

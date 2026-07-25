@@ -1,6 +1,6 @@
 # ccnote.py
 # Created: 8/9/2025
-# Last Edited: 7/6/2026
+# Last Edited: 7/24/2026
 # Author: John Wesley Thompson
 
 from typing import NamedTuple
@@ -11,12 +11,12 @@ import genanki
 class CCNoteField(IntEnum):
     SPELLINGS           = 0
     READINGS            = 1
-    READINGS_AUDIO      = 2
-    READINGS_AUDIO_TAG  = 3
-    SENTENCES           = 4
-    SENTENCES_AUDIO     = 5
-    SENTENCES_AUDIO_TAG = 6
-    SENSES              = 7
+    # READINGS_AUDIO      = 2
+    READINGS_AUDIO_TAG  = 2
+    SENTENCES           = 3
+    # SENTENCES_AUDIO     = 4
+    SENTENCES_AUDIO_TAG = 4
+    SENSES              = 5
 
 
 class Word(NamedTuple):
@@ -53,6 +53,8 @@ class CCNote(genanki.Note):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields = [None] * len(CCNoteField)
+        self.readings_audio_file = ""
+        self.sentences_audio_file = ""
 
     def is_invalid(self) -> bool:
         '''Returns false if there are no fields in the note or if there is no entry id.'''

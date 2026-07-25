@@ -1,0 +1,41 @@
+' container_diagram.puml
+' Created: Jul 11 2026
+' Last Edited: Jul 11 2026
+' Author: John Wesley Thompson
+
+@startuml container_diagram
+
+skinparam BackgroundColor transparent
+
+!include <C4/C4>
+!include <C4/C4_Container>
+
+Person(user, "User", "Someone with some command-line know-how who wants to generate Japanese vocabulary")
+
+System_Ext(anki, "Anki", "Spaced-repetition flashcard system")
+
+System_Ext(openai_api, "OpenAI API")
+System_Ext(google_tts, "Google TTS")
+System_Ext(filesystem, "Filesystem")
+
+System_Boundary(anki_card_generator, "Anki Japanese Flashcard Generator", "test"){
+    Container(card_generator_app, "Card Generator Application", "Python")
+    ContainerDb(sqlite_database, "Sqlite Database", "sqlite3")
+    note bottom of sqlite_database
+    Initialized from external downloaded dataset.
+    The external dataset is not a runtime dependency, 
+    and is downloaded once during setup.
+    endnote
+}
+
+Lay_D(filesystem, google_tts)
+Lay_D(google_tts, openai_api)
+
+Rel(user, card_generator_app, "Uses", "CLI")
+Rel_R(card_generator_app, filesystem, "Reads/Writes")
+Rel_R(card_generator_app, google_tts, "Uses")
+Rel_R(card_generator_app, openai_api, "Uses")
+Rel(card_generator_app, sqlite_database, "Reads", "sqlite3")
+Rel(user, anki, "Uses")
+
+@enduml

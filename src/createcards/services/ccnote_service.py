@@ -1,6 +1,6 @@
 # flash_card_service.py
 # Created: 6/25/2026
-# Last Edited: 7/2/2026
+# Last Edited: 7/24/2026
 # Author: John Wesley Thompson
 
 from createcards.ccnote import CCNote, Sense, Word, CCNoteField
@@ -54,9 +54,9 @@ MODEL_ID = int.from_bytes(
     byteorder="big"
 )
 
-MODEL_TEMPLATE_FRONT = "{{Spellings}} | {{Readings}} {{Readings_Audio}}<br> \
+MODEL_TEMPLATE_FRONT = "{{Spellings}} | {{Readings}} {{Readings_Audio_Tag}}<br> \
         {{Sentences}}<br> \
-        {{Sentences_Audio}}"
+        {{Sentences_Audio_Tag}}"
 
 MODEL_TEMPLATE_BACK = "{{Senses}}"
 
@@ -66,9 +66,9 @@ CREATECARDS_MODEL = genanki.Model(
     fields=[
         {"name": "Spellings"},
         {"name": "Readings"},
-        {"name": "Readings_Audio"},
+        {"name": "Readings_Audio_Tag"},
         {"name": "Sentences"},
-        {"name": "Sentences_Audio"},
+        {"name": "Sentences_Audio_Tag"},
         {"name": "Senses"},
     ],
     templates=[
@@ -118,6 +118,7 @@ class CCNoteService:
         # gTTs audio generation -----------------------------------------------
         if print_progress:
             print("-----Generating audio with Google Text-to-Speech-----")
+
 
         self._generate_audio(words, notes)
 
@@ -210,10 +211,12 @@ class CCNoteService:
             gtts_obj = gTTS(text=(word.reading or word.spelling), lang='ja', slow=False)
             gtts_obj.save(readings_audio_file)
 
-            gtts_obj = gTTS(text=notes[i].fields[CCNoteField.SENTENCES], lang='ja', slow=False)
+            sentences_text = notes[i].fields[CCNoteField.SENTENCES].replace("<br>", '')
+
+            gtts_obj = gTTS(text=sentences_text, lang='ja', slow=False)
             gtts_obj.save(sentences_audio_file)
 
-            notes[i].fields[CCNoteField.READINGS_AUDIO] = readings_audio_file
-            notes[i].fields[CCNoteField.SENTENCES_AUDIO] = sentences_audio_file
+            notes[i].readings_audio_file = readings_audio_file
+            notes[i].sentences_audio_file = sentences_audio_file
             notes[i].fields[CCNoteField.READINGS_AUDIO_TAG] = f"[sound:{readings_audio_file}]" 
-            notes[i].fields[CCNoteField.SENTENCES_AUDIO_TAG] = f"[sound:{sentences_audio_file}]" 
+            notes[i].fields[CCNoteField.SENTENCES_AUDIO_TAG] = f"[sound:{sentences_audio_file}]"

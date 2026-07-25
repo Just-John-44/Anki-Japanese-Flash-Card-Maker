@@ -52,23 +52,10 @@ APIs: gTTS (Google Text-to-Speech), OpenAI API
 DevOps: Docker
 
 ## Architecture
-The application is organized into several stages:
-
-1. **Input Processing**
-    - Reads user-provided text file
-    - Validates file formats and command-line arguments
-
-2. **Data Gathering**
-    - SQLite reading, spelling, and definition lookups
-    - OpenAI sentence generation
-    - Google TTS generates audio for words and sentences
-
-3. **Card Compilation**
-    - Creates a list of flash card objects with previously gathered data
-
-4. **Output**
-    - Anki package file containing the compiled notes
-    - Google TTS output audio mp3 files
+Container-level C4 diagram of the system:
+<img src="/docs/container_diagram.svg" 
+     alt="Container-level Diagram"
+     width="70%">
 
 ## **Installation & Setup**
 
