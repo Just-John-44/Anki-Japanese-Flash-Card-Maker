@@ -19,10 +19,6 @@ DATABASE_PATH = "data/jmdict.db"
 
 DECK_NAME = "Createcards Deck v1"
 
-DECK_ID = int.from_bytes(
-    hashlib.blake2b(DECK_NAME.encode(), digest_size=4).digest(),
-    byteorder="big"
-)
 
 COMPLETION_MESSAGE = """
 
@@ -65,9 +61,10 @@ def main():
 
     # create Anki deck and package with genanki
     deck = genanki.Deck(
-        deck_id=DECK_ID,
-        name=DECK_NAME
+        deck_id=generate_deck_id(args.deck),
+        name=args.deck
     )
+
     for note in notes:
         deck.add_note(note)
 
@@ -114,9 +111,9 @@ def parse_cli_args() -> argparse.Namespace:
     cli_generate_parser = cli_subparsers.add_parser("generate")
     cli_generate_parser.add_argument("input_file", type=text_file)
     cli_generate_parser.add_argument("output_file", type=apkg_file)
+    cli_generate_parser.add_argument("-d", "--deck", type=str, default=DECK_NAME)
 
     return cli_parser.parse_args()
-
 
 
 def read_vocab_file(filename: Path) -> list[Word]:
@@ -142,6 +139,12 @@ def read_vocab_file(filename: Path) -> list[Word]:
 
     return words
 
+
+def generate_deck_id(deck_name: str) -> int:
+    return int.from_bytes(
+        hashlib.blake2b(deck_name.encode(), digest_size=4).digest(),
+        byteorder="big"
+    )
 
 if __name__ == "__main__":
     main()
