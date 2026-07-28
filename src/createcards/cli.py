@@ -1,7 +1,8 @@
 # cli.py
-# Last Edited: 7/24/2026
+# Last Edited: 7/28/2026
 # Author: John Wesley Thompson
 
+from createcards.temp_file_manager import TempFileManager
 from createcards.ccnote import Word
 from createcards.sentence_generator import OpenAISentenceGenerator
 from createcards.services.setup_service import SetupService
@@ -30,7 +31,7 @@ definitions that were listed as issues. Possible reasons for
 issues:
 
 - Provided a spelling for a word but no reading
-  example: 猫 (not followed by a space and ねこ)
+    example: 猫 (not followed by a space and ねこ)
 - Provided a word that is not in the database or is misspelled
 """
 
@@ -55,8 +56,8 @@ def main():
     db_conn = sqlite3.connect(DATABASE_PATH)
     db_conn.row_factory = sqlite3.Row
     sentence_generator = OpenAISentenceGenerator()
-    fc_service = CCNoteService(db_conn, sentence_generator)
-
+    temp_file_manager = TempFileManager()
+    fc_service = CCNoteService(db_conn, sentence_generator, temp_file_manager)
 
     notes = fc_service.create_flash_cards(vocab)
 
@@ -73,11 +74,12 @@ def main():
     package = genanki.Package(deck)
 
     for note in notes:
-        package.media_files.append(note.readings_audio_file)
-        package.media_files.append(note.sentences_audio_file)
+        package.media_files.append(str(temp_file_manager.tmp_dir_name / note.readings_audio_file))
+        package.media_files.append(str(temp_file_manager.tmp_dir_name / note.sentences_audio_file))
 
     # write to file and show completion
     package.write_to_file(args.output_file)
+    temp_file_manager.remove_temp_files()
 
     print(COMPLETION_MESSAGE)
 
@@ -126,7 +128,8 @@ def read_vocab_file(filename: Path) -> list[Word]:
     except FileNotFoundError:
         raise FileNotFoundError(f"file '{filename}' not found.")
 
-    for i, line in enumerate(lines):
+    words = []
+    for line in lines:
         line = line.strip().split()
 
         if len(line) > 2:
@@ -135,9 +138,9 @@ def read_vocab_file(filename: Path) -> list[Word]:
         elif len(line) == 1:
             line.insert(0, "")
 
-        lines[i] = Word(line[0], line[1])
+        words.append(Word(line[0], line[1]))
 
-    return lines
+    return words
 
 
 if __name__ == "__main__":

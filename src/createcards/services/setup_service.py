@@ -1,6 +1,6 @@
 # setup_service.py
 # Created: 6/24/2026
-# Last Edited: 6/25/2026
+# Last Edited: 6/28/2026
 # Author: John Wesley Thompson
 
 import gzip
@@ -89,7 +89,11 @@ class SetupService:
         db_connection.execute("BEGIN")
 
         for entry in root.findall("entry"):
-            entry_id = int(entry.findtext("ent_seq"))
+            entry_id = entry.findtext("ent_seq")
+            if entry_id is None:
+                return Exception("Error finding entry id for database entry")
+
+            entry_id = int(entry_id)
 
             # insert spelling
             for keb in entry.findall("k_ele/keb"):

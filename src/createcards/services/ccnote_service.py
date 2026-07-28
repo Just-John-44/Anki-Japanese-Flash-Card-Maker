@@ -1,17 +1,18 @@
 # flash_card_service.py
 # Created: 6/25/2026
-# Last Edited: 7/24/2026
+# Last Edited: 7/28/2026
 # Author: John Wesley Thompson
 
 from createcards.ccnote import CCNote, Sense, Word, CCNoteField
 from createcards.sentence_generator import OpenAISentenceGenerator
+from createcards.temp_file_manager import TempFileManager
 
 import json
 from gtts import gTTS
 import sqlite3
 import genanki
 import hashlib
-import uuid
+
 
 DICT_ENTRY_QUERY = """
 SELECT 
@@ -90,12 +91,14 @@ class CCNoteService:
     '''Constructs CCNote objects from different sources.'''
 
     def __init__(
-        self, 
-        db_conn: sqlite3.Connection, 
-        sentence_generator: OpenAISentenceGenerator
+        self,
+        db_conn: sqlite3.Connection,
+        sentence_generator: OpenAISentenceGenerator,
+        tmp_file_manager: TempFileManager,
     ):
         self.db_conn = db_conn
         self.sentence_generator = sentence_generator
+        self.tmp_file_manager = tmp_file_manager
 
     def create_flash_cards(self, words: list[Word], print_progress: bool = True) -> list[CCNote]:
         '''Creates of a list of FlashCard objects, querying the dictionary 
@@ -121,16 +124,6 @@ class CCNoteService:
 
 
         self._generate_audio(words, notes)
-
-        # for note in notes:
-        #     print(note.fields[CCNoteField.SPELLINGS])
-        #     print(note.fields[CCNoteField.READINGS])
-        #     print(note.fields[CCNoteField.READINGS_AUDIO])
-        #     print(note.fields[CCNoteField.READINGS_AUDIO_TAG])
-        #     print(note.fields[CCNoteField.SENTENCES])
-        #     print(note.fields[CCNoteField.SENTENCES_AUDIO])
-        #     print(note.fields[CCNoteField.READINGS_AUDIO_TAG])
-        #     print(note.fields[CCNoteField.SENSES])
 
         return notes
 
@@ -176,7 +169,6 @@ class CCNoteService:
 
             # In the case the user enters an ambiguous vocab word, the first 
             # match will be chosen. This should only happen when the user 
-            # doesn't provide either a reading or a spelling
             entry_id = row['entry_id']
 
             # One big query with subqueries to gather information for one card
@@ -204,19 +196,15 @@ class CCNoteService:
         '''Generates audio and populates the audio fields of a CCNote'''
 
         for i, word in enumerate(words):
-            filename = uuid.uuid4().hex[:12]
-            readings_audio_file = f"{filename}_word.mp3"
-            sentences_audio_file = f"{filename}_sentences.mp3"
-
             gtts_obj = gTTS(text=(word.reading or word.spelling), lang='ja', slow=False)
-            gtts_obj.save(readings_audio_file)
+            readings_filename = self.tmp_file_manager.write_gtts_obj_to_temp_file(gtts_obj)
 
-            sentences_text = notes[i].fields[CCNoteField.SENTENCES].replace("<br>", '')
+            if isinstance(sentences_text := notes[i].fields[CCNoteField.SENTENCES], str):
+                sentences_text = sentences_text.replace("<br>", '')
+                gtts_obj = gTTS(text=sentences_text, lang='ja', slow=False)
+                sentences_filename = self.tmp_file_manager.write_gtts_obj_to_temp_file(gtts_obj)
 
-            gtts_obj = gTTS(text=sentences_text, lang='ja', slow=False)
-            gtts_obj.save(sentences_audio_file)
-
-            notes[i].readings_audio_file = readings_audio_file
-            notes[i].sentences_audio_file = sentences_audio_file
-            notes[i].fields[CCNoteField.READINGS_AUDIO_TAG] = f"[sound:{readings_audio_file}]" 
-            notes[i].fields[CCNoteField.SENTENCES_AUDIO_TAG] = f"[sound:{sentences_audio_file}]"
+            notes[i].readings_audio_file = str(readings_filename)
+            notes[i].sentences_audio_file = str(sentences_filename)
+            notes[i].fields[CCNoteField.READINGS_AUDIO_TAG] = f"[sound:{readings_filename}]"
+            notes[i].fields[CCNoteField.SENTENCES_AUDIO_TAG] = f"[sound:{sentences_filename}]"

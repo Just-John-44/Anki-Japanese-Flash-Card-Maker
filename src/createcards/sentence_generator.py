@@ -69,18 +69,21 @@ class OpenAISentenceGenerator:
         self.model = model
         self.client = client
 
-        if client is not None:
-            self.client = client
-            return
-
         api_key = os.getenv("OPENAI_API_KEY")
         if not api_key:
             raise ValueError("Missing OPENAI_API_KEY")
+
+        if client is not None:
+            self.client = client
+            return
 
         self.client = OpenAI(api_key=api_key)
 
     def generate_sentences(self, vocab: list[Word]) -> list[str]:
         '''Generates sentences using the OpenAI API'''
+        if (self.client is None):
+            raise ValueError("Cannot generate sentences without a valid client")
+
         vocab_strings = [IDEOGRAPHIC_SPACE.join(word) if word[0] else word[1] for word in vocab]
         vocab_text = '\n'.join(vocab_strings)
 
@@ -101,7 +104,9 @@ class OpenAISentenceGenerator:
         response_text = chat_completion.choices[0].message.content
 
         try:
-            data = json.loads(response_text)
+            if isinstance(response_text, str):
+                data = json.loads(response_text)
+
         except json.JSONDecodeError:
             raise ValueError("OpenAI returned an invalid response.")
 
