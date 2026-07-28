@@ -5,7 +5,6 @@
 
 from typing import NamedTuple
 from enum import IntEnum
-from pathlib import Path
 import genanki
 
 
@@ -16,6 +15,7 @@ class CCNoteField(IntEnum):
     SENTENCES           = 3
     SENTENCES_AUDIO_TAG = 4
     SENSES              = 5
+    TAGS                = 6
 
 
 class Word(NamedTuple):

@@ -1,6 +1,6 @@
-# sentence_generator.py
+# ai_content_generator.py
 # Created: 8/12/2025
-# Last Edited: 7/6/2026
+# Last Edited: 7/28/2026
 # Author: John Wesley Thompson
 
 from createcards.ccnote import Word
@@ -14,7 +14,7 @@ import os
 PROMPT_HEADER = '''
 I'm going to provide you a list of words in Japanese.
 For each word, please generate 2 example sentences and if applicable,
-tell me if the word belongs to any of the following categories/tags:
+tell me if the word belongs to any of the following tags:
 
 Register:
 Casual, Neutral, Polite, Formal, Very Formal, Honorific, Humble, Business,
@@ -60,7 +60,7 @@ IDEOGRAPHIC_SPACE = '\u3000'
 
 load_dotenv()
 
-class OpenAISentenceGenerator:
+class OpenAIContentGenerator:
     def __init__(
         self, 
         client=None, 
@@ -79,7 +79,7 @@ class OpenAISentenceGenerator:
 
         self.client = OpenAI(api_key=api_key)
 
-    def generate_sentences(self, vocab: list[Word]) -> list[str]:
+    def generate_content(self, vocab: list[Word]) -> tuple[list[str], list[str]]:
         '''Generates sentences using the OpenAI API'''
         if (self.client is None):
             raise ValueError("Cannot generate sentences without a valid client")
@@ -111,8 +111,10 @@ class OpenAISentenceGenerator:
             raise ValueError("OpenAI returned an invalid response.")
 
         sentences = []
+        tags = []
         for word in vocab_strings:
             entry = data[word]
             sentences.append(entry["s1"] + "<br>" + entry["s2"])
+            tags.append(entry["tags"])
 
-        return sentences
+        return sentences, tags

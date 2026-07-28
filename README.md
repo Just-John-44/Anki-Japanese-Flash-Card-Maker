@@ -135,8 +135,6 @@ Though the program is functional as is, I would like to add the following featur
 
 - Addition of command line arguments and a personal config that allow the user to specify what data they want inlcuded in their flash cards
 
-- Implementation of the genanki Python module to bundle flash card data and audio files into a single package, using Anki's native structure
-
 - Usage of the tags that the OpenAI client generate for cards (at the moment, they are discarded)
 
 <br>

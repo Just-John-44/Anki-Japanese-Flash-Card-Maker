@@ -4,7 +4,7 @@
 
 from createcards.temp_file_manager import TempFileManager
 from createcards.ccnote import Word
-from createcards.sentence_generator import OpenAISentenceGenerator
+from createcards.ai_content_generator import OpenAIContentGenerator
 from createcards.services.setup_service import SetupService
 from createcards.services.ccnote_service import CCNoteService
 
@@ -51,7 +51,7 @@ def main():
     # FlashCardService setup
     db_conn = sqlite3.connect(DATABASE_PATH)
     db_conn.row_factory = sqlite3.Row
-    sentence_generator = OpenAISentenceGenerator()
+    sentence_generator = OpenAIContentGenerator()
     temp_file_manager = TempFileManager()
     fc_service = CCNoteService(db_conn, sentence_generator, temp_file_manager)
 

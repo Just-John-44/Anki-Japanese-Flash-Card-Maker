@@ -4,7 +4,7 @@
 # Author: John Wesley Thompson
 
 from createcards.ccnote import CCNote, Sense, Word, CCNoteField
-from createcards.sentence_generator import OpenAISentenceGenerator
+from createcards.ai_content_generator import OpenAIContentGenerator
 from createcards.temp_file_manager import TempFileManager
 
 import json
@@ -59,7 +59,7 @@ MODEL_TEMPLATE_FRONT = "{{Spellings}} | {{Readings}} {{Readings_Audio_Tag}}<br> 
         {{Sentences}}<br> \
         {{Sentences_Audio_Tag}}"
 
-MODEL_TEMPLATE_BACK = "{{Senses}}"
+MODEL_TEMPLATE_BACK = "{{Senses}}<br><br>{{Tags}}"
 
 CREATECARDS_MODEL = genanki.Model(
     model_id=MODEL_ID,
@@ -71,6 +71,7 @@ CREATECARDS_MODEL = genanki.Model(
         {"name": "Sentences"},
         {"name": "Sentences_Audio_Tag"},
         {"name": "Senses"},
+        {"name": "Tags"},
     ],
     templates=[
         {
@@ -93,11 +94,11 @@ class CCNoteService:
     def __init__(
         self,
         db_conn: sqlite3.Connection,
-        sentence_generator: OpenAISentenceGenerator,
+        ai_content_generator: OpenAIContentGenerator,
         tmp_file_manager: TempFileManager,
     ):
         self.db_conn = db_conn
-        self.sentence_generator = sentence_generator
+        self.ai_content_generator = ai_content_generator
         self.tmp_file_manager = tmp_file_manager
 
     def create_flash_cards(self, words: list[Word], print_progress: bool = True) -> list[CCNote]:
@@ -116,7 +117,7 @@ class CCNoteService:
         if print_progress:
             print("----------Generating sentences with OpenAI-----------")
 
-        self._generate_sentences(words, notes)
+        self._generate_AI_content(words, notes)
 
         # gTTs audio generation -----------------------------------------------
         if print_progress:
@@ -184,13 +185,14 @@ class CCNoteService:
                 for sense in json.loads(row['senses'])
             )
 
-    def _generate_sentences(self, words: list[Word], notes: list[CCNote]) -> None:
-        '''Generates sentences and populates the sentences field of a CCNote'''
+    def _generate_AI_content(self, words: list[Word], notes: list[CCNote]) -> None:
+        '''Generates sentences and tags and populates both fields of a CCNote'''
 
-        sentences = self.sentence_generator.generate_sentences(words)
+        sentences, tags = self.ai_content_generator.generate_content(words)
 
         for i in range(len(words)):
             notes[i].fields[CCNoteField.SENTENCES] = sentences[i]
+            notes[i].fields[CCNoteField.TAGS] = tags[i]
 
     def _generate_audio(self, words: list[Word], notes: list[CCNote]) -> None:
         '''Generates audio and populates the audio fields of a CCNote'''
