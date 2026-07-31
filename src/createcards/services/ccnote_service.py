@@ -6,7 +6,9 @@
 from createcards.ccnote import CCNote, Sense, Word, CCNoteField
 from createcards.ai_content_generator import OpenAIContentGenerator
 from createcards.temp_file_manager import TempFileManager
+from pathlib import Path
 
+from typing import Protocol
 import json
 from gtts import gTTS
 import sqlite3
@@ -87,6 +89,13 @@ CREATECARDS_MODEL = genanki.Model(
     ]
 )
 
+class AIContentGeneratorProtocol(Protocol):
+    def generate_content(self, vocab: list[Word]) -> tuple[list[str], list[str]]:
+        ...
+
+class TempFileManagerProtocol(Protocol):
+    def write_gtts_obj_to_temp_file(self, gtts_obj: gTTS) -> Path:
+        ...
 
 class CCNoteService:
     '''Constructs CCNote objects from different sources.'''
@@ -94,8 +103,8 @@ class CCNoteService:
     def __init__(
         self,
         db_conn: sqlite3.Connection,
-        ai_content_generator: OpenAIContentGenerator,
-        tmp_file_manager: TempFileManager,
+        ai_content_generator: AIContentGeneratorProtocol,
+        tmp_file_manager: TempFileManagerProtocol,
     ):
         self.db_conn = db_conn
         self.ai_content_generator = ai_content_generator

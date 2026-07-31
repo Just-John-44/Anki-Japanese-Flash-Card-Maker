@@ -30,7 +30,7 @@ class Sense:
         self.sense_id = sense_id    # The id of the sense in the JMdict database
         self.glosses = glosses      # different ways a sense is expressed with language
 
-    def __eq__(self, other):
+    def __eq__(self, other) -> bool:
         if not isinstance(other, Sense):
             return NotImplemented
 
@@ -49,7 +49,7 @@ class CCNote(genanki.Note):
     '''Object representing all of the data needed for an Anki flash card,
     inheriting from genanki's Note class'''
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         self.fields: list [str | None] = [None] * len(CCNoteField)
         self.readings_audio_file: str = ""

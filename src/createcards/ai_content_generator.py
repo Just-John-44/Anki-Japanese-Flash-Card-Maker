@@ -1,6 +1,6 @@
 # ai_content_generator.py
 # Created: 8/12/2025
-# Last Edited: 7/28/2026
+# Last Edited: 7/30/2026
 # Author: John Wesley Thompson
 
 from createcards.ccnote import Word
@@ -66,21 +66,18 @@ class OpenAIContentGenerator:
         client=None, 
         model: str="gpt-4o-mini"
     ):
-        self.model = model
-        self.client = client
-
         api_key = os.getenv("OPENAI_API_KEY")
         if not api_key:
-            raise ValueError("Missing OPENAI_API_KEY")
+            raise RuntimeError("Missing OPENAI_API_KEY")
 
-        if client is not None:
-            self.client = client
-            return
-
-        self.client = OpenAI(api_key=api_key)
+        self.model = model
+        self.client = OpenAI(api_key=api_key) if client is None else client
 
     def generate_content(self, vocab: list[Word]) -> tuple[list[str], list[str]]:
         '''Generates sentences using the OpenAI API'''
+        if not vocab:
+            raise ValueError("No vocab provided")
+
         if (self.client is None):
             raise ValueError("Cannot generate sentences without a valid client")
 
@@ -106,15 +103,29 @@ class OpenAIContentGenerator:
         try:
             if isinstance(response_text, str):
                 data = json.loads(response_text)
+            else:
+                raise ValueError("OpenAI returned a value that's not a string")
 
         except json.JSONDecodeError:
-            raise ValueError("OpenAI returned an invalid response.")
+            print("OpenAI returned an invalid response.")
+            raise
+
+        if not isinstance(data, dict):
+            raise ValueError("OpenAI did not return json object (may have returned a list, etc.)")
+
+        if len(data) != len(vocab):
+            raise RuntimeError("OpenAI output inconsistent with input")
 
         sentences = []
         tags = []
         for word in vocab_strings:
-            entry = data[word]
-            sentences.append(entry["s1"] + "<br>" + entry["s2"])
-            tags.append(entry["tags"])
+            try:
+                entry = data[word]
+                sentences.append(entry["s1"] + "<br>" + entry["s2"])
+                tags.append(entry["tags"])
+
+            except KeyError:
+                print("OpenAI returned incorrect schema")
+                raise
 
         return sentences, tags

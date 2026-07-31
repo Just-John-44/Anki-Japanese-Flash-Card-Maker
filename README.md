@@ -137,6 +137,10 @@ Though the program is functional as is, I would like to add the following featur
 
 - Usage of the tags that the OpenAI client generate for cards (at the moment, they are discarded)
 
+- Better separation within the OpenAIContentGenerator class methods to make unit tests less bloated and to increase testability
+
+- Addition of a logger for info and better exeption messages
+
 <br>
 
 [Back to top](#anki-flash-card-generator)
